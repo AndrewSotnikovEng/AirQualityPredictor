@@ -27,4 +27,10 @@ class LocationService:
                 return elem["station_url"]
 
 
-
+    @staticmethod
+    def get_location_list():
+        f = open('locations.json')
+        # returns JSON object as
+        # a dictionary
+        data = json.load(f)
+        return data
