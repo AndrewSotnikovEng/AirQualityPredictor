@@ -3,6 +3,7 @@ from plistlib import InvalidFileException  # Import datetime class and rename it
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font, Alignment
 from openpyxl.utils import get_column_letter
+import time
 
 class ExcelService:
     path_to_file = "data.xlsx"
@@ -82,6 +83,8 @@ class ExcelService:
         ExcelService.sheet.cell(row=last_row, column=7, value=aiq_item.pressure)
         ExcelService.sheet.cell(row=last_row, column=8, value=aiq_item.heca_temperature)
         ExcelService.sheet.cell(row=last_row, column=9, value=aiq_item.heca_humidity)
+        ExcelService.sheet.cell(row=last_row, column=11, value=round(time.time()))
+
 
         # Save the workbook to a file
         ExcelService.wb.save(ExcelService.path_to_file)
