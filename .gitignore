@@ -7,11 +7,10 @@ log.log
 *.vsix
 envVars.txt
 **/.vscode/
-**/.vscode/.ropeproject/**
-**/testFiles/**/.cache/**
 *.noseids
 .nyc_output
 .vscode-test
+.idea/**
 __pycache__
 npm-debug.log
 **/.mypy_cache/**
@@ -49,3 +48,5 @@ dist/**
 *.xlf
 package.nls.*.json
 l10n/
+data.xlsx
+data_collection/**
