@@ -14,11 +14,15 @@ class WeatherService:
         if address_match:
             air_quality_item.full_address = address_match.group(1)
 
-
         # Extract date and time
         date_match = re.search(r'Первинні дані на (\d+ \w+ \d{4}, \d{2}:\d{2})', data)
         if date_match:
             air_quality_item.date = date_match.group(1).strip()
+
+        # Extract PM1
+        pm1_match = re.search(r'PM1: ([\d.]+) мкг/м³', data)
+        if pm1_match:
+            air_quality_item.pm1 = pm1_match.group(1).replace(',', '.')
 
         # Extract PM2.5
         pm2_5_match = re.search(r'PM2.5: ([\d.]+) мкг/м³', data)
@@ -54,6 +58,41 @@ class WeatherService:
         heca_humidity_match = re.search(r'HECA – Відносна вологість: ([\d.]+) %', data)
         if heca_humidity_match:
             air_quality_item.heca_humidity = heca_humidity_match.group(1).replace(',', '.')
+
+        # Extract NO
+        no_match = re.search(r'Оксид азоту \(NO\): ([\d.]+) мкг/м³', data)
+        if no_match:
+            air_quality_item.no = no_match.group(1).replace(',', '.')
+
+        # Extract NO2
+        no2_match = re.search(r'Діоксид азоту \(NO₂\): ([\d.]+) мкг/м³', data)
+        if no2_match:
+            air_quality_item.no2 = no2_match.group(1).replace(',', '.')
+
+        # Extract CO2
+        co2_match = re.search(r'Вуглекислий газ \(CO₂\): ([\d.]+) мг/м³', data)
+        if co2_match:
+            air_quality_item.co2 = co2_match.group(1).replace(',', '.')
+
+        # Extract O3
+        o3_match = re.search(r'Озон \(O₃\): ([\d.]+) мкг/м³', data)
+        if o3_match:
+            air_quality_item.o3 = o3_match.group(1).replace(',', '.')
+
+        # Extract H2S
+        h2s_match = re.search(r'Сірководень \(H₂S\): ([\d.]+) мкг/м³', data)
+        if h2s_match:
+            air_quality_item.h2s = h2s_match.group(1).replace(',', '.')
+
+        # Extract SO2
+        so2_match = re.search(r'Діоксид сірки \(SO₂\): ([\d.]+) мкг/м³', data)
+        if so2_match:
+            air_quality_item.so2 = so2_match.group(1).replace(',', '.')
+
+        # Extract CH2O
+        ch2o_match = re.search(r'Формальдегід \(CH₂O\): ([\d.]+) мкг/м³', data)
+        if ch2o_match:
+            air_quality_item.ch2o = ch2o_match.group(1).replace(',', '.')
 
         return air_quality_item
 

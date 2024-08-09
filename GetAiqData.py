@@ -1,19 +1,20 @@
 import shutil
-
+import requests
+import sys
 from Services.WeatherService import WeatherService
 from Services.LocationService import LocationService
 from Services.ExcelService import ExcelService
-import requests
-import sys
+from Services.BackupManager import BackupManager
 
-#Get current location example
-'''url =  LocationService.get_aqi_url()
+# Get current location example
+'''
+url =  LocationService.get_aqi_url()
 aiq = WeatherService.take_data_by_url(url)
 
-print(WeatherService.parse_air_quality_data(aiq) )
+print(WeatherService.parse_air_quality_data(aiq))
 '''
 
-# check connection
+# Check connection
 try:
     response = requests.get("http://www.google.com", timeout=5)
     if response.status_code == 200:
@@ -25,17 +26,15 @@ except requests.ConnectionError:
     print("Failed to connect to the internet")
     sys.exit(0)
 
-# do backup
-source_path = 'data.xlsx'
-destination_path = 'data.xlsx.backup'
+# Perform backup before any operation
+BackupManager.create_backup()
 
-try:
-    shutil.copyfile(source_path, destination_path)
-    print("Backup created successfully.")
-except IOError as e:
-    print("Unable to copy file. %s" % e)
-except:
-    print("Unexpected error:", sys.exc_info())
+# Process all data
+# if BackupManager.is_file_valid('data.xlsx'):
+#     ExcelService.create_file()
+# else:
+#     print("data.xlsx is corrupted. Attempting to restore the latest backup.")
+#     BackupManager.restore_latest_backup()
 
 #process all data
 ExcelService.create_file()

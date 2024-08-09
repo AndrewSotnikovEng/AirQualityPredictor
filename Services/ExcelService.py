@@ -1,23 +1,23 @@
-from datetime import datetime as dt
-from plistlib import InvalidFileException  # Import datetime class and rename it to avoid conflicts
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font, Alignment
 from openpyxl.utils import get_column_letter
+import os
 import time
+from plistlib import InvalidFileException
+
 
 class ExcelService:
     path_to_file = "data.xlsx"
+    wb = None  # Initialize the workbook attribute
+    sheet = None  # Initialize the sheet attribute
 
-
-    # @staticmethod
-    # def create_file():
-    #     try:
-    #         # Try to load an existing workbook
-    #         ExcelService.wb = load_workbook(ExcelService.path_to_file)
-    #     except FileNotFoundError:
-    #         # If the file doesn't exist, create a new workbook
-    #         ExcelService.wb = Workbook()
-
+    # Headers for the Excel sheets in the order corresponding to columns
+    headers = [
+        "Updated Timestamp", "Fetched Timestamp", "PM 2.5", "PM 10",
+        "Temperature", "Humidity", "Pressure", "HECA Temperature",
+        "HECA Humidity", "Timestamp", "PM1", "NO", "NO2",
+        "CO2", "O3", "H2S", "SO2", "CH2O"
+    ]
 
     @staticmethod
     def create_file():
@@ -27,40 +27,27 @@ class ExcelService:
         except (FileNotFoundError, InvalidFileException):
             # If the file doesn't exist or is invalid, create a new workbook
             ExcelService.wb = Workbook()
-
-
-
-    '''
-    @staticmethod
-    def create_tab(tab_name):
-        try:
-            # Try to get an existing sheet
-            ExcelService.sheet = ExcelService.wb[tab_name]
-        except KeyError:
-            # If the sheet doesn't exist, create a new one
-            ExcelService.sheet = ExcelService.wb.create_sheet(title=tab_name)
-
-            # Write headers to the new sheet
+            # Create the default sheet and set headers
+            ExcelService.sheet = ExcelService.wb.active
+            ExcelService.sheet.title = "Air Quality Data"
             for col_num, header in enumerate(ExcelService.headers, 1):
                 ExcelService.sheet.cell(row=1, column=col_num, value=header)
-
-    '''
+            ExcelService.wb.save(ExcelService.path_to_file)
 
     @staticmethod
     def create_tab(tab_name):
+        if ExcelService.wb is None:
+            raise AttributeError("Workbook is not initialized. Call create_file() first.")
+
         try:
             # Try to get an existing sheet
             ExcelService.sheet = ExcelService.wb[tab_name]
         except KeyError:
             # If the sheet doesn't exist, create a new one
             ExcelService.sheet = ExcelService.wb.create_sheet(title=tab_name)
-
-            # Write headers to the new sheet only if it's a new sheet
-            if ExcelService.sheet.max_row == 1:
-                for col_num, header in enumerate(ExcelService.headers, 1):
-                    ExcelService.sheet.cell(row=1, column=col_num, value=header)
-
-
+            for col_num, header in enumerate(ExcelService.headers, 1):
+                ExcelService.sheet.cell(row=1, column=col_num, value=header)
+        ExcelService.wb.save(ExcelService.path_to_file)
 
     @staticmethod
     def write_to_file(tab_name, aiq_item):
@@ -68,16 +55,24 @@ class ExcelService:
         ExcelService.create_tab(tab_name)
 
         # Get the current date in the specified format
-        current_date = dt.now().strftime("%d-%m-%y %H:%M")
+        current_date = time.strftime("%Y-%m-%d %H:%M:%S")
 
         # Get the last row number
         last_row = ExcelService.sheet.max_row + 1
 
-        # Write data to the sheet
+        # Write data to the sheet according to the specified order
         ExcelService.sheet.cell(row=last_row, column=1, value=current_date)
         ExcelService.sheet.cell(row=last_row, column=2, value=aiq_item.date)
+        ExcelService.sheet.cell(row=last_row, column=13, value=aiq_item.pm1)
         ExcelService.sheet.cell(row=last_row, column=3, value=aiq_item.pm2_5)
         ExcelService.sheet.cell(row=last_row, column=4, value=aiq_item.pm10)
+        ExcelService.sheet.cell(row=last_row, column=14, value=aiq_item.no)
+        ExcelService.sheet.cell(row=last_row, column=15, value=aiq_item.no2)
+        ExcelService.sheet.cell(row=last_row, column=16, value=aiq_item.co2)
+        ExcelService.sheet.cell(row=last_row, column=17, value=aiq_item.o3)
+        ExcelService.sheet.cell(row=last_row, column=18, value=aiq_item.h2s)
+        ExcelService.sheet.cell(row=last_row, column=19, value=aiq_item.so2)
+        ExcelService.sheet.cell(row=last_row, column=20, value=aiq_item.ch2o)
         ExcelService.sheet.cell(row=last_row, column=5, value=aiq_item.temperature)
         ExcelService.sheet.cell(row=last_row, column=6, value=aiq_item.humidity)
         ExcelService.sheet.cell(row=last_row, column=7, value=aiq_item.pressure)
@@ -85,14 +80,15 @@ class ExcelService:
         ExcelService.sheet.cell(row=last_row, column=9, value=aiq_item.heca_humidity)
         ExcelService.sheet.cell(row=last_row, column=11, value=round(time.time()))
 
-
         # Save the workbook to a file
         ExcelService.wb.save(ExcelService.path_to_file)
 
         print(f"Processed {tab_name} location")
 
     @staticmethod
-    def format_tab(tab_name, font_size=12, bold=True, align_center=True):       
+    def format_tab(tab_name, font_size=12, bold=True, align_center=True):
+        if ExcelService.sheet is None:
+            raise AttributeError("Sheet is not initialized. Make sure to create or select a sheet first.")
 
         # Apply formatting options
         for col_num in range(1, len(ExcelService.headers) + 1):
@@ -101,8 +97,3 @@ class ExcelService:
             ExcelService.sheet.column_dimensions[get_column_letter(col_num)].width = 25
             if align_center:
                 cell.alignment = Alignment(horizontal='center')
-
-    # Headers for the Excel sheets
-    headers = ["Updated Timestamp", "Fetched Timestamp", "PM 2,5", "PM 10", "Temperature", "Humidity", "Pressure", "HECA Temperature", "HECA Humidity"]
-
-    
