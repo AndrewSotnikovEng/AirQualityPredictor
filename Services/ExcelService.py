@@ -11,10 +11,10 @@ class ExcelService:
     path_to_file = "data.xlsx"
     wb = None  # Initialize the workbook attribute
     headers = [
-        "Updated Timestamp", "Fetched Timestamp", "PM 2.5", "PM 10",
+        "Updated Timestamp", "Fetched Timestamp","PM1", "PM 2.5", "PM 10",
+        "NO", "NO2", "CO2", "O3", "H2S", "SO2", "CH2O",
         "Temperature", "Humidity", "Pressure", "HECA Temperature",
-        "HECA Humidity", "Timestamp", "PM1", "NO", "NO2",
-        "CO2", "O3", "H2S", "SO2", "CH2O"
+        "HECA Humidity", "Timestamp"
     ]
     last_row = None
 
@@ -74,22 +74,22 @@ class ExcelService:
                 current_date = time.strftime("%d-%m-%Y %H:%M:%S")
                 sheet.cell(row=ExcelService.last_row, column=1, value=current_date)
                 sheet.cell(row=ExcelService.last_row, column=2, value=aiq_item.date)
-                sheet.cell(row=ExcelService.last_row, column=13, value=aiq_item.pm1)
-                sheet.cell(row=ExcelService.last_row, column=3, value=aiq_item.pm2_5)
-                sheet.cell(row=ExcelService.last_row, column=4, value=aiq_item.pm10)
-                sheet.cell(row=ExcelService.last_row, column=14, value=aiq_item.no)
-                sheet.cell(row=ExcelService.last_row, column=15, value=aiq_item.no2)
-                sheet.cell(row=ExcelService.last_row, column=16, value=aiq_item.co2)
-                sheet.cell(row=ExcelService.last_row, column=17, value=aiq_item.o3)
-                sheet.cell(row=ExcelService.last_row, column=18, value=aiq_item.h2s)
-                sheet.cell(row=ExcelService.last_row, column=19, value=aiq_item.so2)
-                sheet.cell(row=ExcelService.last_row, column=20, value=aiq_item.ch2o)
-                sheet.cell(row=ExcelService.last_row, column=5, value=aiq_item.temperature)
-                sheet.cell(row=ExcelService.last_row, column=6, value=aiq_item.humidity)
-                sheet.cell(row=ExcelService.last_row, column=7, value=aiq_item.pressure)
-                sheet.cell(row=ExcelService.last_row, column=8, value=aiq_item.heca_temperature)
-                sheet.cell(row=ExcelService.last_row, column=9, value=aiq_item.heca_humidity)
-                sheet.cell(row=ExcelService.last_row, column=11, value=round(time.time()))
+                sheet.cell(row=ExcelService.last_row, column=3, value=aiq_item.pm1)
+                sheet.cell(row=ExcelService.last_row, column=4, value=aiq_item.pm2_5)
+                sheet.cell(row=ExcelService.last_row, column=5, value=aiq_item.pm10)
+                sheet.cell(row=ExcelService.last_row, column=6, value=aiq_item.no)
+                sheet.cell(row=ExcelService.last_row, column=7, value=aiq_item.no2)
+                sheet.cell(row=ExcelService.last_row, column=8, value=aiq_item.co2)
+                sheet.cell(row=ExcelService.last_row, column=9, value=aiq_item.o3)
+                sheet.cell(row=ExcelService.last_row, column=10, value=aiq_item.h2s)
+                sheet.cell(row=ExcelService.last_row, column=11, value=aiq_item.so2)
+                sheet.cell(row=ExcelService.last_row, column=12, value=aiq_item.ch2o)
+                sheet.cell(row=ExcelService.last_row, column=13, value=aiq_item.temperature)
+                sheet.cell(row=ExcelService.last_row, column=14, value=aiq_item.humidity)
+                sheet.cell(row=ExcelService.last_row, column=15, value=aiq_item.pressure)
+                sheet.cell(row=ExcelService.last_row, column=16, value=aiq_item.heca_temperature)
+                sheet.cell(row=ExcelService.last_row, column=17, value=aiq_item.heca_humidity)
+                sheet.cell(row=ExcelService.last_row, column=18, value=round(time.time()))
 
         ExcelService.wb.save(ExcelService.path_to_file)
         print(f"Data written to all sheets")
