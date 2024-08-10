@@ -6,14 +6,6 @@ from Services.LocationService import LocationService
 from Services.ExcelService import ExcelService
 from Services.BackupManager import BackupManager
 
-# Get current location example
-'''
-url =  LocationService.get_aqi_url()
-aiq = WeatherService.take_data_by_url(url)
-
-print(WeatherService.parse_air_quality_data(aiq))
-'''
-
 # Check connection
 try:
     response = requests.get("http://www.google.com", timeout=5)
@@ -30,20 +22,22 @@ except requests.ConnectionError:
 BackupManager.create_backup()
 
 # Process all data
-# if BackupManager.is_file_valid('data.xlsx'):
-#     ExcelService.create_file()
-# else:
-#     print("data.xlsx is corrupted. Attempting to restore the latest backup.")
-#     BackupManager.restore_latest_backup()
-
-#process all data
-ExcelService.create_file()
 locations = LocationService.get_location_list()
 
+location_names = [location["name"] for location in locations]
+
+# Create or load the Excel file and ensure the necessary sheets exist
+ExcelService.create_file(location_names)
+
+# Fetch and write data for each location
 for location in locations:
-    aiq_string = WeatherService.take_data_by_url(location["station_url"])
-    aiq = WeatherService.parse_air_quality_data(aiq_string)
-    ExcelService.create_tab(location["name"])
-    ExcelService.format_tab(location["name"])
-    ExcelService.write_to_file(location["name"], aiq)
-    
+    try:
+        aiq_string = WeatherService.take_data_by_url(location["station_url"])
+        if aiq_string:
+            aiq_item = WeatherService.parse_air_quality_data(aiq_string, location["name"])
+            ExcelService.format_tab(location["name"])
+            ExcelService.write_to_file([aiq_item])
+    except Exception as e:
+        print(f"Failed to process data for {location['name']}: {e}")
+
+print("Data processing completed.")

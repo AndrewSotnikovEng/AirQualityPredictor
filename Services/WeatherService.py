@@ -3,11 +3,15 @@ import requests
 from bs4 import BeautifulSoup
 from Models.AiqItem import AiqItem
 
+
 class WeatherService:
 
     @staticmethod
-    def parse_air_quality_data(data):
+    def parse_air_quality_data(data, station_name):
         air_quality_item = AiqItem()
+
+        # Set station name
+        air_quality_item.station_name = station_name
 
         # Extract city and street
         address_match = re.search(r'Рівень забруднення атмосферного повітря за адресою:\s*(.*)', data)
@@ -96,24 +100,17 @@ class WeatherService:
 
         return air_quality_item
 
-    @staticmethod   
+    @staticmethod
     def take_data_by_url(url):
-        # Fetch the HTML content from the URL
         response = requests.get(url)
-        
+
         if response.status_code == 200:
-            # Parse the HTML content
             soup = BeautifulSoup(response.content, 'html.parser')
-            
-            # City, street
             data1 = soup.select_one('h1.text-center')
-            
-            # Update's timestamp
             data2 = soup.select_one('div.col-md-6:nth-child(1) > h4:nth-child(14)')
-            
-            # Parameter details
             data3 = soup.select_one('div.col-md-6:nth-child(1) > p:nth-child(15)')
-            
+
             return data1.text.strip() + "\n" + data2.text.strip() + "\n" + data3.text.strip()
         else:
             print("Failed to retrieve the page. Status code:", response.status_code)
+            return None
