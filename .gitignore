@@ -50,4 +50,6 @@ package.nls.*.json
 l10n/
 data.xlsx
 *data*.xlsx
+*data*.backup
 data_collection/**
+**/*.zip
