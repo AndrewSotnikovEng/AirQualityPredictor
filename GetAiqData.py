@@ -1,3 +1,4 @@
+import time
 import requests
 import sys
 import logging
@@ -43,7 +44,7 @@ successful_locations = 0
 # Fetch and write data for each location
 for index, location in enumerate(locations, start=1):
     print(f"Processing station {index}/{total_locations}: {location['name']}")
-    logging.info(f"Processing station {index}/{total_locations}: {location['name']}")
+    # logging.info(f"Processing station {index}/{total_locations}: {location['name']}")
     try:
         aiq_string = WeatherService.take_data_by_url(location["station_url"])
         if aiq_string:
@@ -57,6 +58,7 @@ for index, location in enumerate(locations, start=1):
     except Exception as e:
         print(f"Failed to process data for {location['name']}: {e}")
         logging.error(f"Failed to process data for {location['name']}: {e}")
+    time.sleep(3)
 
 # Log the final status
 if successful_locations == total_locations:
