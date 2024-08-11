@@ -41,6 +41,7 @@ build/ci/performance/performance-results.json
 debug*.log
 debugpy*.log
 pydevd*.log
+processing*.log
 nodeLanguageServer/**
 nodeLanguageServer.*/**
 dist/**
