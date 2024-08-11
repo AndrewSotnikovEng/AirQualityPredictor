@@ -5,7 +5,7 @@ import os
 import time
 from plistlib import InvalidFileException
 import re
-
+from Services.BackupManager import BackupManager
 
 class ExcelService:
     path_to_file = "data.xlsx"
@@ -22,6 +22,24 @@ class ExcelService:
     def sanitize_sheet_name(name):
         name = re.sub(r'[\[\]\*\/\\:\?]', '_', name)
         return name[:31]
+
+    @staticmethod
+    def prepare_excel_file(location_names):
+        """
+        Ensure that the Excel file exists, restoring from backup if necessary,
+        or creating a new file if neither exists.
+        """
+        if not os.path.exists(ExcelService.path_to_file):
+            print(f"{ExcelService.path_to_file} does not exist. Attempting to restore from backup.")
+            BackupManager.restore_latest_backup()
+
+        if not os.path.exists(ExcelService.path_to_file):
+            print(f"Restoration failed or no backups found. Creating a new {ExcelService.path_to_file}.")
+            ExcelService.create_file(location_names)
+
+        else:
+            # Load the existing workbook
+            ExcelService.create_file(location_names)
 
     @staticmethod
     def create_file(location_names):
@@ -92,7 +110,6 @@ class ExcelService:
                 sheet.cell(row=ExcelService.last_row, column=18, value=round(time.time()))
 
         ExcelService.wb.save(ExcelService.path_to_file)
-        print(f"Data written to all sheets")
 
     @staticmethod
     def format_tab(tab_name, font_size=12, bold=True, align_center=True):
