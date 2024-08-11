@@ -1,3 +1,4 @@
+import time
 import requests
 import sys
 import logging
@@ -57,6 +58,7 @@ for index, location in enumerate(locations, start=1):
     except Exception as e:
         print(f"Failed to process data for {location['name']}: {e}")
         logging.error(f"Failed to process data for {location['name']}: {e}")
+    time.sleep(3)
 
 # Log the final status
 if successful_locations == total_locations:
