@@ -52,7 +52,6 @@ for index, location in enumerate(locations, start=1):
             ExcelService.write_to_file([aiq_item])
             successful_locations += 1
             print(f"Data successfully written for station: {location['name']}")
-            logging.info(f"Data successfully written for station: {location['name']}")
         else:
             logging.warning(f"Station not available: {location['name']}")
     except Exception as e:
