@@ -1,3 +1,6 @@
+import logging
+from zipfile import BadZipFile
+
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font, Alignment
 from openpyxl.utils import get_column_letter
@@ -39,7 +42,12 @@ class ExcelService:
 
         else:
             # Load the existing workbook
-            ExcelService.create_file(location_names)
+            try:
+                ExcelService.create_file(location_names)
+            except (BadZipFile, OSError):
+                os.remove(ExcelService.path_to_file)
+                logging.info("Removed old file and created new")
+                BackupManager.restore_latest_backup()
 
     @staticmethod
     def create_file(location_names):
